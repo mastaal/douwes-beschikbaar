@@ -32,6 +32,28 @@ isbn_dict = {}
 #availability_regex = re.compile("class=\"col-md-4 book-highlight-price\".{500}")
 availability_regex = re.compile("Niet leverbaar")
 
+def check_isbn(isbn):
+    """Check if isbn is a valid 13-digit ISBN"""
+    if len(isbn) != 13:
+        return False
+
+    # Verify ISBN check digit
+    given_check_digit = int(isbn[12])
+    digit_sum = 0
+    i = 0
+    while i < 12:
+        if (i % 2) != 0:
+            digit_sum = digit_sum + 3*int(isbn[i])
+        else:
+            digit_sum = digit_sum + int(isbn[i])
+        i = i + 1
+    check_digit = 10 - (digit_sum % 10)
+    
+    if given_check_digit == check_digit:
+        return True
+    else:
+        return False
+
 def init_dict(book_file_name):
     """Initialize isbn_dict dictionary"""
     with open(book_file) as csvf:
@@ -47,11 +69,15 @@ def gen_url(isbn):
     try:
         book = isbn_dict[isbn]
     except:
-        raise Exception("Non-defined ISBN")
+        raise Exception("ISBN is not defined in isbn_dict")
     return "https://www.boekhandeldouwes.nl/boek/" + isbn + "-" + book.replace(' ', '-')
 
 def check_available(isbn):
     """Check if isbn is available"""
+    if check_isbn(isbn):
+        pass
+    else:
+        raise Exception("Invalid ISBN supplied")
     url = gen_url(isbn)
     print(url)
     with urllib.request.urlopen(url) as response:
