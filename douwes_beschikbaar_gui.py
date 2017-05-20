@@ -52,14 +52,19 @@ class DouwesGUI:
 
     def search_isbn(self):
         isbn = self.entry_isbn.get()
-        available = douwes.check_available(isbn)
+        if douwes.check_isbn(isbn) == False:
+            self.label_result_text.set("ERROR: geen valide ISBN opgegeven.")
+            return
+        available, status = douwes.check_available(isbn)
         if available:
             self.label_result_text.set("Deze titel is momenteel leverbaar.")
         else:
             self.label_result_text.set("Deze titel is momenteel niet leverbaar.")
+        if status == -1:
+            self.label_result_text.set("ERROR: Deze titel is of niet goed opgegeven in de database, of bestaat niet op de website.")
 
 root = Tk()
 root.wm_title("douwes-beschikbaar")
-root.geometry("400x50+0+0")
+root.geometry("550x50+0+0")
 app = DouwesGUI(root)
 root.mainloop()
