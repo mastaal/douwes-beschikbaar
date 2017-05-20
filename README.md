@@ -14,6 +14,9 @@ ISBN,title
 ISBN,"title with spaces"
 ```
 
+The ISBN must not contain any characters other than digits. Thus, for example,
+"978-1616551841" is not allowed and should be "9781616551841"
+
 The path in this file has to be specified by setting the "book_file" variable
 accordingly.
 
@@ -29,3 +32,5 @@ If you ommit specifying an ISBN in your call, you will be prompted to enter one.
 
 Execute the program, fill in an ISBN and hit "Zoeken". A result will be printed
 on the window within a few moments.
+
+Please note that the GUI depends on the commandline script.

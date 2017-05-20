@@ -14,6 +14,9 @@ ISBN,titel
 ISBN,"titel met spaties
 ```
 
+Het ISBN mag geen andere karakters bevatten dan cijfers. Dus, bijvoorbeeld
+"978-1616551841" is niet goed, dit moet zijn "9781616551841".
+
 Het pad naar dit bestand moet gedefiniëerd worden in de "book_file" variabele.
 
 ## douwes_beschikbaar.py
