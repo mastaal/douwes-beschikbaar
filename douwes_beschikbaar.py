@@ -31,7 +31,8 @@ import re
 book_file = "uitverkochte_titels.csv"
 isbn_dict = {}
 
-availability_regex = re.compile("Niet leverbaar")
+not_available_regex = re.compile("Niet leverbaar")
+available_regex = re.compile("voorraad|levertijd")
 
 def check_isbn(isbn):
     """Check if isbn is a valid 13-digit ISBN"""
@@ -49,7 +50,9 @@ def check_isbn(isbn):
             digit_sum = digit_sum + int(isbn[i])
         i = i + 1
     check_digit = 10 - (digit_sum % 10)
-    
+    if check_digit == 10:
+        check_digit = 0
+
     if given_check_digit == check_digit:
         return True
     else:
@@ -80,17 +83,30 @@ def check_available(isbn):
     else:
         raise Exception("Invalid ISBN supplied")
     url = gen_url(isbn)
-    with urllib.request.urlopen(url) as response:
-        html = response.read()
-        if availability_regex.search(str(html)) != None:
-            # Book is not available
-            return False
-        else:
-            return True
+    try:
+        with urllib.request.urlopen(url) as response:
+            html = response.read()
+            if available_regex.search(str(html)) != None:
+                # Book is available
+                return (True, 0)
+            else:
+                # Check to be sure that it's not available
+                if not_available_regex.search(str(html)) != None:
+                    # Book is not available
+                    return (False, 0)
+                else:
+                    return (True, 1)
+    except urllib.error.HTTPError:
+        # There's an error with locating the book on the website, thus it either
+        # doesn't exist or the information in the database is wrong.
+        print("HTTPError!")
+        return (False, -1)
 
 if __name__ == "__main__":
     init_dict(book_file)
+    book = ""
     if len(sys.argv) > 1:
-        check_available(sys.argv[1])
+        book = sys.argv[1]
     else:
-        check_available(input("ISBN = "))
+        book = input("ISBN = ")
+    print(check_available(book))
