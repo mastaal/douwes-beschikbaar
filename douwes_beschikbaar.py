@@ -1,24 +1,26 @@
 #!/usr/bin/python3
 
 """
-check_available.py:
+douwes_beschikbaar.py:
     Python script to check if a book is available on boekhandeldouwes.nl, using
     ISBN and/or a book title, either from input or .csv file.
 
-Copyright 2017 Martijn Staal
+    Copyright 2017 Martijn Staal                                               
+                                                                               
+    This file is part of douwes-beschikbaar.                                   
+                                                                               
+    douwes-beschikbaar is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+                                                                               
+    douwes-beschikbaar is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
 
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License
+    along with douwes-beschikbaar.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import csv
@@ -29,7 +31,6 @@ import re
 book_file = "uitverkochte_titels.csv"
 isbn_dict = {}
 
-#availability_regex = re.compile("class=\"col-md-4 book-highlight-price\".{500}")
 availability_regex = re.compile("Niet leverbaar")
 
 def check_isbn(isbn):
@@ -79,16 +80,17 @@ def check_available(isbn):
     else:
         raise Exception("Invalid ISBN supplied")
     url = gen_url(isbn)
-    print(url)
     with urllib.request.urlopen(url) as response:
         html = response.read()
         if availability_regex.search(str(html)) != None:
-            print("Niet leverbaar")
+            # Book is not available
+            return False
         else:
-            print("Leverbaar")
+            return True
 
-init_dict(book_file)
-if len(sys.argv) > 1:
-    check_available(sys.argv[1])
-else:
-    check_available(input("ISBN = "))
+if __name__ == "__main__":
+    init_dict(book_file)
+    if len(sys.argv) > 1:
+        check_available(sys.argv[1])
+    else:
+        check_available(input("ISBN = "))
